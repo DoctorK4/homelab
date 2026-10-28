@@ -19,9 +19,9 @@
 
 | 구분 | 작업 |
 |---|---|
-| 원문상 완료·동작 확인 | Ubuntu 설치, SSH 키 접속, 덮개 닫힘 후 접속 유지, Tailscale 접속, Docker 기본 실행, Nginx 화면, Glances 웹 UI, Docker 장애·복구 Discord 알림 |
-| 구현 완료·실제 조건 미검증 | 배터리 20% 이하 안전 종료, 배터리 30% 이하 및 디스크 90% 이상 경고 |
-| 미구현·예정 | 온도 경고, AC 분리 즉시 알림, 외부 Heartbeat, 외부 자동 백업, HTTPS 공개, PostgreSQL·웹 앱, CI/CD |
+| 완료·동작 확인 | Ubuntu 설치, SSH 키 접속, 덮개 닫힘 후 접속 유지, Tailscale 접속, Docker 기본 실행, Nginx 화면, Glances 웹 UI, Discord 웹후크 메시지 수신, 5분 주기 systemd 모니터링 실행, Docker 장애·복구 Discord 알림 |
+| 구현·설정 완료, 임계 조건 미검증 | 배터리 20% 이하 안전 종료, AC 분리 및 배터리 30% 이하 경고, 디스크 사용률 90% 이상 경고 |
+| 완료 여부 확인 필요 | CPU 온도 80°C 경고, AC 전원 분리 즉시 알림 (별도 작업 요청 이력은 있으나 적용 결과 미확인) |\n| 완료 기록 없음·예정 | 외부 Heartbeat, 외부 자동 백업, HTTPS·Cloudflare Tunnel, PostgreSQL·웹 앱, CI/CD |
 | 추가 확인 필요 | NordVPN과 Tailscale 간 접속 문제의 근본 원인, 알림 재시도 정책 개선 |
 
 체크박스는 실제 작업과 검증을 마친 뒤 갱신한다. 검증한 날짜·조건·관찰 결과를 해당 문서와 변경 이력에 함께 남긴다.
@@ -79,7 +79,7 @@ Bash 스크립트와 systemd timer를 이용해 5분 간격으로 다음 항목�
 | 디스크 | 루트 파일시스템 사용률 90% 이상 | 구현, 실경고 미검증 |
 | Docker | `glances`, `nginx-test` 실행 중단 | 장애·복구 메시지 실검증 완료 |
 
-이전 상태를 파일에 기록해 동일 장애의 반복 알림을 줄였다. Nginx 컨테이너를 실제로 중단하고 복구하며 Discord에 경고와 복구 메시지가 모두 도착하는 것을 확인했다. Discord 웹후크는 root 전용 설정 파일로 분리했다.
+Discord 웹후크 테스트 메시지 수신을 확인했고, systemd oneshot 서비스가 `0/SUCCESS`로 종료되는 것도 확인했다. 이전 상태를 파일에 기록해 동일 장애의 반복 알림을 줄였다. Nginx 컨테이너를 실제로 중단하고 복구하며 Discord에 경고와 복구 메시지가 모두 도착하는 것을 확인했다. Discord 웹후크는 root 전용 설정 파일로 분리했다.
 
 ## 현재 구성
 
@@ -95,8 +95,8 @@ MacBook ── SSH / Tailscale ── Lenovo Ubuntu Server
 
 ## 앞으로 할 일
 
-- [ ] CPU 온도 센서를 확인하고 80°C 이상 경고 구현
-- [ ] AC 전원 분리 즉시 알림 구현
+- [ ] CPU 온도 80°C 이상 경고의 실제 적용 여부 확인 후 미적용 시 구현
+- [ ] AC 전원 분리 즉시 알림의 실제 적용 여부 확인 후 미적용 시 구현
 - [ ] 서버 전체 다운 감지용 외부 Heartbeat 모니터링
 - [ ] 설정 파일과 서비스 데이터의 외부 자동 백업
 - [ ] HTTPS 서비스 공개 방식 검토 (예: Cloudflare Tunnel)
